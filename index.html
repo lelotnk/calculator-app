@@ -34,6 +34,21 @@
         </div>
     </div>
 
+    <script>
+        let buttons = document.querySelectorAll('button');
+
+        buttons.forEach(function(button){
+
+            button.addEventListener('click', function(e) {
+                console.log(`Clicked button: ${e.target.textContent}`);
+            });
+
+        })
+
+        document.addEventListener('keydown', function(e){
+            console.log(`Pressed key: ${e.key}`);
+        });
+    </script>
 
 </body>
 </html>
