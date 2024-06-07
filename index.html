@@ -10,7 +10,7 @@
 
 
     <div id="calculator-app">
-        <div class="visor">123.456.789,00</div>
+        <div class="visor"></div>
         <div class="buttons">
             <button class="btn-other">C</button>
             <button class="btn-other">+/-</button>
@@ -35,18 +35,66 @@
     </div>
 
     <script>
+
+        function formatarNumero(numero) {
+            if (isNaN(numero)) {
+                return '';
+            }
+
+            numero = parseFloat(numero);
+
+            return numero.toLocaleString('pt-BR', {
+                // minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        const validarEntrada = entrada => {
+            let teclasPermitidas = ["+", "-", "*", "X", "+", "C", "+/-", "%", "÷", ".", "0"];
+            return (+entrada > 0 || teclasPermitidas.includes(entrada));
+        }
+
         let buttons = document.querySelectorAll('button');
+
+        let display = document.querySelector('.visor');
+
+        const atualizaDisplay = tecla => {
+            if (tecla === "C") {
+                display.innerHTML = '';
+                return;
+            }
+
+            if (tecla === '.' && display.innerHTML.indexOf(".") >= 0) {
+                return;
+            }
+
+            if (tecla === '.' && display.innerHTML === "") {
+                display.innerHTML = '0'+ tecla;
+                return;
+            }
+
+            if (+tecla > 0 || tecla === "0" || tecla === ".")
+                display.innerHTML = display.innerHTML +''+ tecla;
+        }
 
         buttons.forEach(function(button){
 
             button.addEventListener('click', function(e) {
-                console.log(`Clicked button: ${e.target.textContent}`);
+                let tecla = e.target.textContent;
+
+                if (validarEntrada(tecla)) {
+                    atualizaDisplay(tecla);
+                }
             });
 
         })
 
-        document.addEventListener('keydown', function(e){
-            console.log(`Pressed key: ${e.key}`);
+        document.addEventListener('keypress', function(e){
+            let tecla = e.key;
+
+            if (validarEntrada(tecla)) {
+                atualizaDisplay(tecla);
+            }
         });
     </script>
 
