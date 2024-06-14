@@ -29,7 +29,7 @@
             <button>3</button>
             <button class="btn-operation">+</button>
             <button id="zero">0</button>
-            <button>.</button>
+            <button>,</button>
             <button class="btn-operation">=</button>
         </div>
     </div>
@@ -45,12 +45,12 @@
 
             return numero.toLocaleString('pt-BR', {
                 // minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 6
             });
         }
 
         const validarEntrada = entrada => {
-            let teclasPermitidas = ["+", "-", "*", "X", "+", "C", "+/-", "%", "÷", ".", "0"];
+            let teclasPermitidas = ["+", "-", "*", "X", "+", "C", "+/-", "%", "÷", ",", "0"];
             return (+entrada > 0 || teclasPermitidas.includes(entrada));
         }
 
@@ -58,23 +58,44 @@
 
         let display = document.querySelector('.visor');
 
-        const atualizaDisplay = tecla => {
+        const removerPontuacao = valorString => {
+            return valorString.replaceAll(".", "").replace(",", ".");
+        }
+
+        const atualizarDiplay = valor => display.innerHTML = valor;
+
+        const obtemValorDisplay = () => display.innerHTML;
+
+        const validarDisplay = tecla => {
             if (tecla === "C") {
-                display.innerHTML = '';
+                atualizarDiplay('');
                 return;
             }
 
-            if (tecla === '.' && display.innerHTML.indexOf(".") >= 0) {
+            let valorSemPontuacao = removerPontuacao(obtemValorDisplay());
+
+            if (tecla === "+/-" && obtemValorDisplay() !== "0") {
+                atualizarDiplay(formatarNumero(valorSemPontuacao * -1));
                 return;
             }
 
-            if (tecla === '.' && display.innerHTML === "") {
-                display.innerHTML = '0'+ tecla;
+            if (tecla === ',' && obtemValorDisplay().indexOf(",") >= 0) {
                 return;
             }
 
-            if (+tecla > 0 || tecla === "0" || tecla === ".")
-                display.innerHTML = display.innerHTML +''+ tecla;
+            if (tecla === ',' && obtemValorDisplay() === "") {
+                atualizarDiplay('0'+ tecla);
+                return;
+            }
+
+            if (tecla === ",") {
+                atualizarDiplay(obtemValorDisplay() +''+ tecla);
+                return;
+            }
+
+            if (+tecla > 0 || tecla === "0" || tecla === ",") {
+                atualizarDiplay(formatarNumero(valorSemPontuacao +''+ tecla));
+            }
         }
 
         buttons.forEach(function(button){
@@ -83,17 +104,17 @@
                 let tecla = e.target.textContent;
 
                 if (validarEntrada(tecla)) {
-                    atualizaDisplay(tecla);
+                    validarDisplay(tecla);
                 }
             });
 
         })
 
-        document.addEventListener('keypress', function(e){
-            let tecla = e.key;
+        document.addEventListener('keypress', function(event){
+            let tecla = event.key;
 
             if (validarEntrada(tecla)) {
-                atualizaDisplay(tecla);
+                validarDisplay(tecla);
             }
         });
     </script>
